@@ -1,41 +1,14 @@
-# ARCone Brand Guidelines
+# ARCone
 
-## Name
-ARCone
+Initial logo concept.
 
-## Meaning
-ARC + One
+Designed by Tobu8888.
 
-A unified prediction market built on Arc.
+Date:
+2026-06-12
 
-## Logo Concept
+Source files:
+- logo.svg
 
-The logo is designed around:
-
-- Simplicity
-- Speed
-- Trust
-- Global Finance
-
-The icon can be used independently from the wordmark.
-
-## Typography
-
-Wordmark:
-Inter
-IBM Plex Sans
-(or future custom type)
-
-## Usage
-
-✓ App icon
-✓ Website
-✓ Social media
-✓ Documentation
-
-## Created
-
-June 2026
-
-Founder:
-Tobb
+Status:
+Work in progress.
