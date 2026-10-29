@@ -1,0 +1,14 @@
+{
+  "name": "arcone-tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deployment and verification scripts for the ARCone contracts on Arc",
+  "type": "commonjs",
+  "scripts": {
+    "rpc:check": "node check-rpc.js",
+    "history": "node read-history.js"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0"
+  }
+}
