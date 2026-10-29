@@ -20,10 +20,12 @@ the app never holds funds.
 
 | Path | What it holds |
 | --- | --- |
-| `tools/` | Deployment and verification scripts (Node, ethers v6) |
+| `tools/` | Deployment, payout and export scripts (Node, ethers v6) |
+| `docs/tools.md` | What each script does, with worked examples |
 | `docs/arc-notes.md` | RPC limits, gas costs and other findings measured on Arc |
 | `docs/verification.md` | How to check the mainnet deployment without trusting this README |
 | `DEPLOYMENTS.md` | Every deployed address, with the transactions behind them |
+| `examples/` | A payout batch file and a withholding export taken from testnet |
 | `brand.md`, `*.png`, `*.svg` | Logo files the app loads directly from this repo |
 
 ## Working with the tools
@@ -42,5 +44,9 @@ out of commits.
 ## Status
 
 The payouts contract is live on Arc mainnet with real USDC through it. The invoice
-contract, the dashboard and the receipt views run on Arc testnet. Batch payouts and a
-withholding receipt export for accounting are not built yet.
+contract, the dashboard and the receipt views run on Arc testnet.
+
+Paying a list of contractors and exporting withholding receipts work from the command
+line today (`tools/batch-payout.js`, `tools/export-wht.js`); neither is in the web app
+yet, and the contract still has no batch entry point, so a batch is one transaction per
+contractor sharing a single approval.
