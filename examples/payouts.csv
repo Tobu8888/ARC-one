@@ -1,0 +1,4 @@
+# One row per contractor. Amounts are gross, in USDC; withholding comes off on-chain.
+recipient,amount,memo
+0xFAfafB4756eD81e61a7d8F835fbc8aA905EB4c42,0.40,"logo set, october"
+0x4b42A601D33530baB2bB32A84fD3460207E36aCB,0.25,translation
