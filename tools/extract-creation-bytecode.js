@@ -17,9 +17,13 @@ const fs = require('fs');
 const { provider } = require('./lib/arc');
 
 async function main() {
-  const [network, address, txHash, out] = process.argv.slice(2);
+  const argv = process.argv.slice(2);
+  const argsFlag = argv.indexOf('--args');
+  const argCount = argsFlag >= 0 ? Number(argv[argsFlag + 1]) : 4;
+  const positional = argsFlag >= 0 ? argv.filter((_, i) => i !== argsFlag && i !== argsFlag + 1) : argv;
+  const [network, address, txHash, out] = positional;
   if (!network || !address || !txHash) {
-    console.error('usage: node extract-creation-bytecode.js <network> <contract> <deployTxHash> [out.hex]');
+    console.error('usage: node extract-creation-bytecode.js <network> <contract> <deployTxHash> [out.hex] [--args n]');
     process.exit(1);
   }
 
@@ -50,10 +54,15 @@ async function main() {
   console.log('constructor args (first 8 words):');
   words.slice(0, 8).forEach((w, i) => console.log(`  [${i}] 0x${w}`));
 
+  // The calldata continues past the constructor arguments with the rest of the
+  // userOp, so the blob has to be cut at the end of the arguments themselves.
+  const end = at + runtime.length + argCount * 64;
+  if (end > input.length) throw new Error(`calldata ends before ${argCount} constructor arguments`);
+
   const file = out || 'creation.hex';
-  fs.writeFileSync(file, '0x' + input.slice(start));
-  console.log(`\nwrote ${file} (includes the original constructor arguments)`);
-  console.log('replace the trailing 32-byte words to deploy with your own arguments');
+  fs.writeFileSync(file, '0x' + input.slice(start, end));
+  console.log(`\nwrote ${file} (${(end - start) / 2} bytes, ${argCount} constructor arguments kept)`);
+  console.log('use encode-constructor-args.js to replace them with your own');
 }
 
 main().catch((e) => { console.error('failed:', e.message); process.exit(1); });
