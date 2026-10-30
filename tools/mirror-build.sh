@@ -41,13 +41,35 @@ for path in "${entries[@]}"; do
 done
 
 # Lazy-loaded chunks appear as relative imports inside the entry bundle.
-for f in "$tmp"/assets/*.js; do
-  grep -oE '"\./[A-Za-z0-9_.-]+\.js"' "$f" 2>/dev/null | tr -d '".' | sed 's|^/||' || true
-done | sort -u | while read -r chunk; do
-  [ -z "$chunk" ] && continue
+chunks="$(
+  for f in "$tmp"/assets/*.js; do
+    grep -oE '"\./[A-Za-z0-9_.-]+\.js"' "$f" 2>/dev/null | sed -E 's|^"\./||; s|"$||' || true
+  done | sort -u
+)"
+for chunk in $chunks; do
   [ -f "$tmp/assets/$chunk" ] && continue
   if curl -fsSL "$SOURCE/assets/$chunk" -o "$tmp/assets/$chunk"; then
     echo "  fetched chunk $chunk"
+  else
+    rm -f "$tmp/assets/$chunk"
+    echo "  skipped $chunk (not served)"
+  fi
+done
+
+# Images the app loads from the site root, e.g. "/logo.png" inside the bundle
+# and the favicon in index.html. Missing these is what breaks the logo.
+images="$(
+  {
+    grep -ohE '"/[A-Za-z0-9_.-]+\.(png|svg|ico|jpg|webp)"' "$tmp"/assets/*.js 2>/dev/null || true
+    grep -ohE '(href|src)="/[A-Za-z0-9_.-]+\.(png|svg|ico|jpg|webp)"' "$tmp/index.html" 2>/dev/null || true
+  } | grep -oE '/[A-Za-z0-9_.-]+\.[a-z]+' | sed 's|^/||' | sort -u || true
+)"
+for img in $images; do
+  if curl -fsSL "$SOURCE/$img" -o "$tmp/$img"; then
+    echo "  fetched $img"
+  else
+    rm -f "$tmp/$img"
+    echo "  skipped $img (not served)"
   fi
 done
 
@@ -57,6 +79,9 @@ mkdir -p "$TARGET/assets"
 rm -f "$TARGET"/assets/*
 cp "$tmp/index.html" "$TARGET/index.html"
 cp "$tmp"/assets/* "$TARGET/assets/"
+for img in "$tmp"/*.png "$tmp"/*.svg "$tmp"/*.ico "$tmp"/*.jpg "$tmp"/*.webp; do
+  [ -e "$img" ] && cp "$img" "$TARGET/"
+done
 
 echo
 echo "mirrored $(ls "$TARGET/assets" | wc -l) asset file(s)"
