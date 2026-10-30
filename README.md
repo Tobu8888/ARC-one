@@ -22,10 +22,13 @@ the app never holds funds.
 
 | Path | What it holds |
 | --- | --- |
+| `contracts/` | Solidity sources written in Arc Studio, with the foundry config used to build them |
+| `app/` | React frontend sources from the Arc Studio export |
 | `tools/` | Deployment, payout and export scripts (Node, ethers v6) |
 | `docs/tools.md` | What each script does, with worked examples |
 | `docs/arc-notes.md` | RPC limits, gas costs and other findings measured on Arc |
 | `docs/verification.md` | How to check the mainnet deployment without trusting this README |
+| `docs/source-matches-chain.md` | Proof that the sources here compile to the deployed bytecode |
 | `DEPLOYMENTS.md` | Every deployed address, with the transactions behind them |
 | `examples/` | A payout batch file and a withholding export taken from testnet |
 | `brand.md`, `*.png`, `*.svg` | Logo files the app loads directly from this repo |
