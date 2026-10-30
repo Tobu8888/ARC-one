@@ -9,7 +9,8 @@ rebuilt by hand afterwards. ARCone does both at once: the contract takes the gro
 amount, sends 97% to the contractor, routes 3% to a treasury address, and emits an event
 carrying gross, withheld, net and memo. The filing trail is the transaction.
 
-- Live app: https://phulimphad-app-574d7c35-f816-4f63-8605-0c80b4e2ff0e.static.hf.space
+- Live app: https://tobu8888.github.io/
+- Arc Studio deployment (same build): https://phulimphad-app-574d7c35-f816-4f63-8605-0c80b4e2ff0e.static.hf.space
 - Payouts on mainnet: [`0x0F225c0F…Ca79ea4`](https://explorer.arc.io/address/0x0F225c0FfB0bD7c5C50732Ab9e9D9BD91Ca79ea4)
 - Invoices on mainnet: [`0x1D0c34B7…3E440984`](https://explorer.arc.io/address/0x1D0c34B719E3EE10d1904a80b66F69033E440984)
 - Example payout: [`0xa08d370e…27d4657`](https://explorer.arc.io/tx/0xa08d370e3d1285ae851a6df4e4bdda6db69941f2d54cf6ad13e0f5e0527d4657)
