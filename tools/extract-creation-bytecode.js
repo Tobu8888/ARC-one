@@ -14,7 +14,20 @@
  */
 
 const fs = require('fs');
-const { provider } = require('./lib/arc');
+const { chain, provider } = require('./lib/arc');
+
+/** Blockscout keeps the creation bytecode even when the calldata does not hold it. */
+async function explorerCreationCode(network, address) {
+  try {
+    const res = await fetch(`${chain(network).explorer}/api/v2/smart-contracts/${address}`);
+    if (!res.ok) return null;
+    const body = await res.json();
+    const code = body.creation_bytecode;
+    return code ? code.replace(/^0x/, '') : null;
+  } catch {
+    return null;
+  }
+}
 
 async function main() {
   const argv = process.argv.slice(2);
@@ -31,12 +44,35 @@ async function main() {
   const tx = await p.getTransaction(txHash);
   if (!tx) throw new Error(`transaction not found on ${network}: ${txHash}`);
 
-  const input = tx.data.slice(2);
+  let input = tx.data.slice(2);
   const runtime = (await p.getCode(address)).slice(2);
   if (runtime.length === 0) throw new Error(`no code at ${address}`);
 
-  const at = input.indexOf(runtime);
-  if (at < 0) throw new Error('runtime code is not contained in the deploy calldata');
+  let at = input.indexOf(runtime);
+  if (at < 0) {
+    // Some deploys hand the init code to a factory, so it never appears in the
+    // outer calldata. The explorer keeps the creation bytecode either way.
+    const fromExplorer = await explorerCreationCode(network, address);
+    if (!fromExplorer) throw new Error('runtime code is not in the calldata and the explorer has no creation bytecode');
+    console.log('calldata did not contain the runtime, using the explorer creation bytecode');
+    input = fromExplorer;
+    at = input.indexOf(runtime);
+    if (at < 0) {
+      // A contract with immutable variables has them patched into the runtime at
+      // deploy time, so the stored code never matches the template byte for byte.
+      // The explorer blob is already the full creation code; take it whole.
+      console.log('runtime differs from the template, which is what immutables look like');
+      const end = fromExplorer.length;
+      const start2 = 0;
+      const argsHex = fromExplorer.slice(end - argCount * 64);
+      console.log(`constructor arguments (last ${argCount} words):`);
+      for (let i = 0; i < argCount; i++) console.log('  0x' + argsHex.slice(i * 64, (i + 1) * 64));
+      const file2 = out || 'creation.hex';
+      fs.writeFileSync(file2, '0x' + fromExplorer.slice(start2));
+      console.log(`\nwrote ${file2} (${(end - start2) / 2} bytes, whole creation blob)`);
+      return;
+    }
+  }
 
   // The constructor prologue starts at the last standard solc preamble before
   // the runtime blob.
