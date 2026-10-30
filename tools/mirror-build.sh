@@ -75,6 +75,10 @@ done
 
 sed -i 's|="/assets/|="./assets/|g' "$tmp/index.html"
 
+# Replace the host's own title, thumbnail and bootstrap script, and point the
+# tab icon at the ARCone logo.
+python3 "$(dirname "$0")/patch-index.py" "$tmp/index.html" "${ARCONE_SITE_URL:-https://tobu8888.github.io}"
+
 mkdir -p "$TARGET/assets"
 rm -f "$TARGET"/assets/*
 cp "$tmp/index.html" "$TARGET/index.html"
