@@ -45,8 +45,9 @@ out of commits.
 ## Status
 
 Both contracts are live on Arc mainnet with real USDC through them: a payout that split
-withholding off, and an invoice created and paid. The web app still points at Arc testnet,
-so the dashboard and receipt views read testnet data.
+withholding off, and an invoice created and paid. The web app opens on Arc mainnet and
+can switch to Arc testnet, where the faucet button appears and the testnet contracts are
+used instead.
 
 Paying a list of contractors and exporting withholding receipts work from the command
 line today (`tools/batch-payout.js`, `tools/export-wht.js`); neither is in the web app
